@@ -20,7 +20,9 @@ class ReasoningEngine:
         self.fetcher = fetcher
         self.memory = ResearchTree()
         self.todo = ResearchTodoManager() # Instancia del Todo Manager
-        self.max_steps = 25
+        self.max_steps = 30
+        self.last_search_results = []  # Track results for result_id selection
+        self.last_inspected_url = None  # Track last inspected article
 
     def solve(self, question: str) -> Dict[str, Any]:
         self.memory.add_node("root", "Goal", question)
@@ -60,64 +62,156 @@ class ReasoningEngine:
             try:
                 if tool == "search_google":
                     results = self.searcher.search(args.get("query", ""))
-                    tool_output = "\n".join([f"- [{r.title}]({r.url})" for r in results]) or "No results."
+                    self.last_search_results = results  # Store for result_id selection
+                    # Format search results with numbered list showing metadata only
+                    if results:
+                        formatted = ["SEARCH RESULTS (Metadata Only - NO Full Content):"]
+                        for i, r in enumerate(results, 1):
+                            formatted.append(f"\n[{i}] Title: {r.title}")
+                            formatted.append(f"    URL: {r.url}")
+                            if r.snippet:
+                                formatted.append(f"    Snippet: {r.snippet}")
+                        formatted.append("\n⚠️ YOU MUST SELECT ONE result by calling inspect_article_structure with the URL or result number.")
+                        tool_output = "\n".join(formatted)
+                    else:
+                        tool_output = "No results found. Try a different query."
 
                 elif tool == "inspect_article_structure":
-                    struct = self.fetcher.get_article_structure(args.get("url", ""))
-                    tool_output = f"Sections: {struct.sections}"
+                    # Support both URL and result_id
+                    url = args.get("url")
+                    result_id = args.get("result_id")
+                    
+                    if result_id is not None:
+                        # Convert result_id to int and get URL from last search
+                        try:
+                            idx = int(result_id) - 1
+                            if 0 <= idx < len(self.last_search_results):
+                                url = self.last_search_results[idx].url
+                            else:
+                                tool_output = f"❌ Invalid result_id: {result_id}. Must be 1-{len(self.last_search_results)}"
+                                raise ValueError("Invalid result_id")
+                        except (ValueError, TypeError):
+                            tool_output = f"❌ Invalid result_id format: {result_id}"
+                            raise
+                    
+                    if not url:
+                        tool_output = "❌ Must provide either 'url' or 'result_id'"
+                        raise ValueError("Missing URL")
+                    
+                    self.last_inspected_url = url  # Track for read_section
+                    struct = self.fetcher.get_article_structure(url)
+                    
+                    # Format structure view (ToC)
+                    formatted = [f"📄 ARTICLE: {struct.title}"]
+                    formatted.append(f"    URL: {url}")
+                    formatted.append(f"\n📝 SUMMARY (Lead Section):\n{struct.summary[:500]}...")
+                    formatted.append(f"\n📑 TABLE OF CONTENTS (Sections):")
+                    for i, sec in enumerate(struct.sections, 1):
+                        formatted.append(f"  [{i}] {sec}")
+                    formatted.append("\n⚠️ YOU MUST SELECT ONE SECTION TO READ (use read_section with section_name).")
+                    tool_output = "\n".join(formatted)
 
                 elif tool == "read_section":
-                    content = self.fetcher.get_section_content(args.get("url", ""), args.get("section_name", ""))
-                    tool_output = content if content else "Section empty."
+                    # Use last inspected URL if not provided
+                    url = args.get("url") or self.last_inspected_url
+                    section_name = args.get("section_name", "")
+                    
+                    if not url:
+                        tool_output = "❌ No article currently inspected. Inspect an article first."
+                        raise ValueError("No inspected article")
+                    
+                    if not section_name:
+                        tool_output = "❌ Must provide section_name from the Table of Contents"
+                        raise ValueError("Missing section_name")
+                    
+                    content = self.fetcher.get_section_content(url, section_name)
+                    if content:
+                        tool_output = f"📖 SECTION CONTENT ({section_name}):\n{content}"
+                    else:
+                        tool_output = f"Section '{section_name}' not found or empty. Check the ToC again."
 
                 elif tool == "add_to_memory":
-                    self.memory.add_node(args.get("parent_id", "root"), args.get("topic", "Info"), args.get("content", ""))
-                    tool_output = "Info stored."
+                    source_url = args.get("source_url") or self.last_inspected_url or ""
+                    node_id = self.memory.add_node(
+                        args.get("parent_id", "root"), 
+                        args.get("topic", "Info"), 
+                        args.get("content", ""),
+                        source_url
+                    )
+                    tool_output = f"✓ Info stored in node [{node_id}]."
 
                 # NUEVA HERRAMIENTA EDR: Gestión de Tareas
                 elif tool == "manage_tasks":
                     action = args.get("action") # add, complete
                     if action == "add":
-                        tid = self.todo.add_task(args.get("description"), args.get("priority", 5))
-                        tool_output = f"Task added ID {tid}"
+                        description = args.get("description")
+                        if not description:
+                            raise ValueError("Description required when adding a task")
+                        tid = self.todo.add_task(description, args.get("priority", 5))
+                        tool_output = f"✓ Task added ID {tid}"
                     elif action == "complete":
-                        self.todo.complete_task(args.get("task_id"), "Done")
-                        tool_output = "Task completed."
+                        task_id = args.get("task_id")
+                        if not task_id:
+                            raise ValueError("task_id required to complete a task")
+                        result_note = args.get("result", "Done")
+                        self.todo.complete_task(task_id, result_note)
+                        tool_output = f"✓ Task {task_id} marked complete."
+                    else:
+                        raise ValueError("Unknown manage_tasks action")
 
                 elif tool == "answer_question":
                     final_answer = args.get("answer")
+                    self.todo.complete_all(final_answer or "Answered")
+                    tool_output = f"✅ Final answer recorded: {final_answer}"
+                    print(f"\n🎯 FINAL ANSWER: {final_answer}")
                     break
 
                 else:
-                    tool_output = "Unknown tool."
+                    tool_output = f"❌ Unknown tool: {tool}"
 
             except Exception as e:
-                tool_output = f"Error: {e}"
+                tool_output = f"❌ Error: {e}"
+                logger.error(f"Tool execution error: {e}", exc_info=True)
 
-            reasoning_trace.append({"step": current_step, "tool": tool, "result": str(tool_output)[:200]})
+            reasoning_trace.append({
+                "step": current_step, 
+                "thought": thought,
+                "tool": tool, 
+                "args": args,
+                "result": str(tool_output)[:500]  # Increased from 200 to 500
+            })
 
-        return {"final_answer": final_answer, "trace": reasoning_trace}
+        return {
+            "final_answer": final_answer, 
+            "trace": reasoning_trace,
+            "tree_state": self.memory.to_json(),
+            "plan_state": self.todo.get_plan_view()
+        }
 
     def _build_step_prompt(self, q, tree, plan, history):
+        tree_view = tree.replace("KNOWLEDGE TREE:\n", "", 1) if tree.startswith("KNOWLEDGE TREE") else tree
+        history_text = json.dumps(history, ensure_ascii=False, indent=2) if history else "[]"
+
         return f"""
 GOAL: {q}
 
 {plan}
 
-KNOWLEDGE TREE:
-{tree}
+RESEARCH TREE (ID :: TOPIC):
+{tree_view}
 
-AVAILABLE TOOLS:
-1. search_google(query)
-2. inspect_article_structure(url)
-3. read_section(url, section_name)
-4. add_to_memory(parent_id, topic, content)
-5. manage_tasks(action="add|complete", description="...", task_id="...") -> USE THIS TO UPDATE THE PLAN!
-6. answer_question(answer)
+REMINDERS:
+- ALWAYS follow: REFLECT → SEARCH → SELECT → INSPECT → TARGET → READ → STORE → PLAN.
+- Use search result_id (preferred) or exact URL when calling inspect_article_structure.
+- Only call read_section after inspecting the article and include the exact section_name from the ToC.
+- Every verified fact must be saved with add_to_memory (include parent_id, topic, content, source_url).
+- Keep the TODO list accurate with manage_tasks before launching new searches.
+- Never fabricate URLs or section names.
 
-HISTORY: {history}
+RECENT STEPS:
+{history_text}
 
-Respond in JSON with 'thought', 'tool', and 'args'.
+Respond ONLY with JSON containing 'thought', 'tool', and 'args'.
 """
 
     def _parse_json_response(self, text: str) -> Dict[str, Any]:

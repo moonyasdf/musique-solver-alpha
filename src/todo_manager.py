@@ -24,6 +24,15 @@ class ResearchTodoManager:
             if t.id == task_id:
                 t.status = "completed"
                 t.result = result
+                return
+        raise ValueError(f"Task with id {task_id} not found")
+    
+    def complete_all(self, result: str = "Done"):
+        """Mark all pending tasks as complete."""
+        for t in self.tasks:
+            if t.status == "pending":
+                t.status = "completed"
+                t.result = result
 
     def get_next_task(self) -> Optional[Task]:
         pending = [t for t in self.tasks if t.status == "pending"]

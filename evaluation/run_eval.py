@@ -45,6 +45,7 @@ def initialize_components() -> ReasoningEngine:
         base_url=config.OPENAI_API_BASE if config.OPENAI_API_BASE != "https://api.openai.com/v1" else None,
         temperature=0.0,
         system_prompt=system_prompt,
+        streaming=config.STREAMING,
     )
     
     search_client = WikipediaSearchClient(

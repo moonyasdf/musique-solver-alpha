@@ -19,10 +19,11 @@ load_dotenv()
 @dataclass
 class Settings:
     # LLM
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
-    openai_api_base: str = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
-    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4")
-    temperature: float = float(os.getenv("TEMPERATURE", "0.2"))
+    openai_api_key: str = os.getenv("OPENAI_API_KEY", "sk-local-master")
+    openai_api_base: str = os.getenv("OPENAI_API_BASE", "https://947d76b87e86.ngrok-free.app/v1")
+    openai_model: str = os.getenv("OPENAI_MODEL", "deepseek-v3.1")
+    temperature: float = float(os.getenv("TEMPERATURE", "0.0"))
+    streaming: bool = os.getenv("STREAMING", "true").lower() == "true"
 
     # Search
     google_api_key: str = os.getenv("GOOGLE_API_KEY", "")
@@ -70,3 +71,4 @@ BENCHMARK_FILE = settings.benchmark_file
 RESULTS_DIR = settings.results_dir
 PROMPTS_DIR = settings.prompts_dir
 MEMORY_STORE_PATH = settings.memory_store_path
+STREAMING = settings.streaming
