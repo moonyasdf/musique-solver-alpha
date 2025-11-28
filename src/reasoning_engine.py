@@ -1,18 +1,15 @@
-"""
-Updated Reasoning Engine to support the v0.2.1 Agent Prompt logic.
-Handles the 'thought' field and executes the new suite of tools.
-"""
+"""Updated Reasoning Engine with EDR Todo Manager."""
 from __future__ import annotations
-
 import logging
 import json
 import re
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 from .llm_client import LLMClient
 from .web_search import WikipediaSearchClient
 from .wiki_fetcher import WikipediaArticleFetcher
 from .research_tree import ResearchTree
+from .todo_manager import ResearchTodoManager # Importar el nuevo manager
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +19,13 @@ class ReasoningEngine:
         self.searcher = searcher
         self.fetcher = fetcher
         self.memory = ResearchTree()
-        self.max_steps = 20  # Increased for granular steps (Inspect -> Read -> Store takes more turns)
+        self.todo = ResearchTodoManager() # Instancia del Todo Manager
+        self.max_steps = 25
 
     def solve(self, question: str) -> Dict[str, Any]:
-        """
-        Executes the agent loop. Returns a dict with the final answer and the full trace.
-        """
-        # Initialize Memory with the Goal
-        self.memory.add_node("root", "Research Goal", question)
+        self.memory.add_node("root", "Goal", question)
+        # Tarea inicial EDR
+        self.todo.add_task(f"Decompose and answer: {question}", priority=10)
         
         reasoning_trace = []
         current_step = 0
@@ -38,141 +34,99 @@ class ReasoningEngine:
         while current_step < self.max_steps:
             current_step += 1
             
-            # 1. Build Context (The "State" of the agent)
-            # We show the Tree Structure to help it plan
+            # 1. Contexto EDR: Árbol + Plan (Todo.md)
             tree_snapshot = self.memory.get_tree_view()
+            plan_snapshot = self.todo.get_plan_view()
             
-            # 2. Construct Prompt for this turn
-            # We append the history of the LAST few actions to avoid loops, 
-            # but rely primarily on the Tree for long-term context.
-            prompt = self._build_step_prompt(question, tree_snapshot, reasoning_trace[-3:])
+            prompt = self._build_step_prompt(question, tree_snapshot, plan_snapshot, reasoning_trace[-2:])
             
-            # 3. Get LLM Decision
             try:
                 response_text = self.llm.chat([{"role": "user", "content": prompt}], temperature=0.0)
                 action_data = self._parse_json_response(response_text)
             except Exception as e:
                 logger.error(f"LLM Error: {e}")
-                reasoning_trace.append({"step": current_step, "error": str(e)})
                 continue
 
-            thought = action_data.get("thought", "No thought provided")
+            thought = action_data.get("thought", "No thought")
             tool = action_data.get("tool")
             args = action_data.get("args", {})
             
-            logger.info(f"Step {current_step} | Thought: {thought} | Tool: {tool}")
-            
-            # 4. Execute Tool
-            tool_output = "Error: Tool execution failed"
+            print(f"\nStep {current_step} | Tool: {tool}")
+            print(f"Thought: {thought}")
+
+            # 2. Ejecución de Herramientas (Con Fix de None)
+            tool_output: str = "" # Inicializar siempre
             
             try:
                 if tool == "search_google":
                     results = self.searcher.search(args.get("query", ""))
-                    tool_output = "\n".join([f"{i+1}. [{r.title}]({r.url})\n   Snippet: {r.snippet}" for i, r in enumerate(results)])
-                    if not tool_output: tool_output = "No results found."
+                    tool_output = "\n".join([f"- [{r.title}]({r.url})" for r in results]) or "No results."
 
                 elif tool == "inspect_article_structure":
                     struct = self.fetcher.get_article_structure(args.get("url", ""))
-                    tool_output = f"TITLE: {struct.title}\nSUMMARY: {struct.summary[:500]}...\nSECTIONS:\n" + "\n".join([f"- {s}" for s in struct.sections])
+                    tool_output = f"Sections: {struct.sections}"
 
                 elif tool == "read_section":
                     content = self.fetcher.get_section_content(args.get("url", ""), args.get("section_name", ""))
-                    tool_output = content if content else "Section empty or not found."
+                    tool_output = content if content else "Section empty."
 
                 elif tool == "add_to_memory":
-                    parent_id = args.get("parent_id", "root")
-                    new_id = self.memory.add_node(
-                        parent_id=parent_id,
-                        topic=args.get("topic", "General"),
-                        content=args.get("content", ""),
-                        source_url=args.get("source_url")
-                    )
-                    tool_output = f"Success. Info stored in node ID: {new_id}"
+                    self.memory.add_node(args.get("parent_id", "root"), args.get("topic", "Info"), args.get("content", ""))
+                    tool_output = "Info stored."
 
-                elif tool == "read_memory_tree":
-                    tool_output = self.memory.get_tree_view()
+                # NUEVA HERRAMIENTA EDR: Gestión de Tareas
+                elif tool == "manage_tasks":
+                    action = args.get("action") # add, complete
+                    if action == "add":
+                        tid = self.todo.add_task(args.get("description"), args.get("priority", 5))
+                        tool_output = f"Task added ID {tid}"
+                    elif action == "complete":
+                        self.todo.complete_task(args.get("task_id"), "Done")
+                        tool_output = "Task completed."
 
                 elif tool == "answer_question":
                     final_answer = args.get("answer")
-                    tool_output = "Task Completed."
-                    reasoning_trace.append({
-                        "step": current_step,
-                        "thought": thought,
-                        "tool": tool,
-                        "args": args,
-                        "result": tool_output
-                    })
-                    break # EXIT LOOP
+                    break
 
                 else:
-                    tool_output = f"Unknown tool: {tool}"
+                    tool_output = "Unknown tool."
 
             except Exception as e:
-                tool_output = f"Tool Error: {str(e)}"
+                tool_output = f"Error: {e}"
 
-            # 5. Log Step
-            reasoning_trace.append({
-                "step": current_step,
-                "thought": thought,
-                "tool": tool,
-                "args": args,
-                "result": tool_output[:1000] + "..." if len(str(tool_output)) > 1000 else tool_output
-            })
+            reasoning_trace.append({"step": current_step, "tool": tool, "result": str(tool_output)[:200]})
 
-        return {
-            "question": question,
-            "final_answer": final_answer,
-            "trace": reasoning_trace,
-            "tree_state": self.memory.to_json()
-        }
+        return {"final_answer": final_answer, "trace": reasoning_trace}
 
-    def _build_step_prompt(self, question: str, tree_snapshot: str, recent_history: list) -> str:
-        history_text = ""
-        for item in recent_history:
-            history_text += f"Step {item['step']}:\n  Thought: {item.get('thought')}\n  Action: {item.get('tool')}({item.get('args')})\n  Result: {item.get('result')}\n\n"
-        
+    def _build_step_prompt(self, q, tree, plan, history):
         return f"""
-Current Task: {question}
+GOAL: {q}
 
-KNOWLEDGE TREE (Your Memory):
-{tree_snapshot}
+{plan}
 
-RECENT HISTORY:
-{history_text}
+KNOWLEDGE TREE:
+{tree}
 
-Analyze the Tree and History. Decide the next step.
-Remember:
-1. Search if you have gaps.
-2. Inspect Structure -> Read Section to verify details.
-3. add_to_memory is REQUIRED to save progress.
-4. answer_question only when the Tree proves the answer.
+AVAILABLE TOOLS:
+1. search_google(query)
+2. inspect_article_structure(url)
+3. read_section(url, section_name)
+4. add_to_memory(parent_id, topic, content)
+5. manage_tasks(action="add|complete", description="...", task_id="...") -> USE THIS TO UPDATE THE PLAN!
+6. answer_question(answer)
 
-Respond in JSON.
+HISTORY: {history}
+
+Respond in JSON with 'thought', 'tool', and 'args'.
 """
 
     def _parse_json_response(self, text: str) -> Dict[str, Any]:
-        """Robust JSON extraction from LLM response."""
-        # 1. Try direct parsing
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            pass
-            
-        # 2. Try extracting from code blocks
         match = re.search(r'```json\s*(.*?)\s*```', text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(1))
-            except json.JSONDecodeError:
-                pass
-                
-        # 3. Try finding the first '{' and last '}'
-        start = text.find('{')
-        end = text.rfind('}')
-        if start != -1 and end != -1:
-            try:
-                return json.loads(text[start:end+1])
-            except json.JSONDecodeError:
-                pass
-                
-        raise ValueError(f"Could not parse valid JSON from response: {text[:100]}...")
+        clean_text = match.group(1) if match else text
+        try:
+            return json.loads(clean_text)
+        except:
+            # Fallback simple
+            start = text.find('{')
+            end = text.rfind('}') + 1
+            return json.loads(text[start:end])
