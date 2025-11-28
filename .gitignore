@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.env
+.env.*
+venv/
+.cache/
+.idea/
+*.log
+**/.DS_Store
+.data/
+/flattened
