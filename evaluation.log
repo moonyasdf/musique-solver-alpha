@@ -1,0 +1,254 @@
+2025-11-28 20:32:51,332 - __main__ - INFO - Initializing Agent Engine...
+2025-11-28 20:32:51,390 - __main__ - INFO - Processing 1/3...
+2025-11-28 20:32:51,390 - __main__ - INFO - Evaluating QID: 4hop1__152562_5274_458768_33677
+2025-11-28 20:32:51,390 - __main__ - INFO - Question: Vilaiyaadu Mankatha's record label has just one company that is larger than it. When was the most recent Bicycle Friendly Community award given to the city where the headquarters of that larger company lies?
+2025-11-28 20:32:53,018 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:33:00,596 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:33:10,324 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:33:36,847 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:33:51,694 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:34:06,483 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:34:12,687 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:34:18,114 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:34:26,408 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:34:32,395 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 20:34:32,396 - openai._base_client - INFO - Retrying request to /chat/completions in 28.000000 seconds
+2025-11-28 20:35:02,438 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:35:28,976 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:35:34,095 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:35:38,396 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:35:41,460 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 20:35:41,461 - openai._base_client - INFO - Retrying request to /chat/completions in 19.000000 seconds
+2025-11-28 20:36:01,785 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:36:06,045 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:36:11,985 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:36:15,670 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:36:19,255 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 20:36:19,255 - openai._base_client - INFO - Retrying request to /chat/completions in 41.000000 seconds
+2025-11-28 20:37:04,106 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:37:12,810 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:37:20,286 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:53:04,017 - __main__ - INFO - Initializing Agent Engine...
+2025-11-28 20:53:04,076 - __main__ - INFO - Processing 1/3...
+2025-11-28 20:53:04,076 - __main__ - INFO - Evaluating QID: 4hop1__152562_5274_458768_33677
+2025-11-28 20:53:04,076 - __main__ - INFO - Question: Vilaiyaadu Mankatha's record label has just one company that is larger than it. When was the most recent Bicycle Friendly Community award given to the city where the headquarters of that larger company lies?
+2025-11-28 20:53:06,474 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:53:10,979 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:53:15,075 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:53:20,120 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:53:30,848 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 20:53:30,849 - openai._base_client - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-11-28 20:54:02,329 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:54:15,082 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:54:19,382 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:54:23,627 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:54:29,088 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 20:54:29,088 - openai._base_client - INFO - Retrying request to /chat/completions in 32.000000 seconds
+2025-11-28 20:55:02,698 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:55:07,762 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:55:12,734 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:55:16,727 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:55:21,473 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 20:55:21,474 - openai._base_client - INFO - Retrying request to /chat/completions in 39.000000 seconds
+2025-11-28 20:56:01,938 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:56:06,187 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:56:10,988 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 20:59:56,673 - __main__ - INFO - Initializing Agent Engine...
+2025-11-28 20:59:56,731 - __main__ - INFO - Processing 1/3...
+2025-11-28 20:59:56,731 - __main__ - INFO - Evaluating QID: 4hop1__152562_5274_458768_33677
+2025-11-28 20:59:56,731 - __main__ - INFO - Question: Vilaiyaadu Mankatha's record label has just one company that is larger than it. When was the most recent Bicycle Friendly Community award given to the city where the headquarters of that larger company lies?
+2025-11-28 20:59:58,535 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:00:03,690 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:00:08,878 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:00:15,227 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:00:28,026 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:00:33,045 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 21:00:33,045 - openai._base_client - INFO - Retrying request to /chat/completions in 28.000000 seconds
+2025-11-28 21:01:02,638 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:01:06,837 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:01:14,314 - src.reasoning_engine - ERROR - Tool execution error: All configured search backends failed. No backend available.
+Traceback (most recent call last):
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/reasoning_engine.py", line 76, in solve
+    results = self.searcher.search(args.get("query", ""))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/web_search.py", line 87, in search
+    raise SearchError(
+src.web_search.SearchError: All configured search backends failed. No backend available.
+2025-11-28 21:01:15,832 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:01:19,842 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:01:25,882 - src.reasoning_engine - ERROR - Tool execution error: All configured search backends failed. No backend available.
+Traceback (most recent call last):
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/reasoning_engine.py", line 76, in solve
+    results = self.searcher.search(args.get("query", ""))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/web_search.py", line 87, in search
+    raise SearchError(
+src.web_search.SearchError: All configured search backends failed. No backend available.
+2025-11-28 21:01:26,480 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 21:01:26,480 - openai._base_client - INFO - Retrying request to /chat/completions in 34.000000 seconds
+2025-11-28 21:02:05,649 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:02:10,485 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:02:14,421 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:02:22,795 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:02:27,630 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 21:02:27,631 - openai._base_client - INFO - Retrying request to /chat/completions in 33.000000 seconds
+2025-11-28 21:03:02,140 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:03:07,262 - src.reasoning_engine - ERROR - Tool execution error: All configured search backends failed. No backend available.
+Traceback (most recent call last):
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/reasoning_engine.py", line 76, in solve
+    results = self.searcher.search(args.get("query", ""))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/web_search.py", line 87, in search
+    raise SearchError(
+src.web_search.SearchError: All configured search backends failed. No backend available.
+2025-11-28 21:03:08,797 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 21:03:13,302 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 22:59:48,103 - __main__ - INFO - Initializing Agent Engine...
+2025-11-28 22:59:48,162 - __main__ - INFO - Processing 1/3...
+2025-11-28 22:59:48,163 - __main__ - INFO - Evaluating QID: 4hop1__152562_5274_458768_33677
+2025-11-28 22:59:48,163 - __main__ - INFO - Question: Vilaiyaadu Mankatha's record label has just one company that is larger than it. When was the most recent Bicycle Friendly Community award given to the city where the headquarters of that larger company lies?
+2025-11-28 22:59:49,997 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 22:59:54,070 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 22:59:59,190 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:00:07,689 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:00:15,471 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:00:22,332 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:00:27,453 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:00:30,737 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:00:30,737 - openai._base_client - INFO - Retrying request to /chat/completions in 30.000000 seconds
+2025-11-28 23:01:12,202 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:01:18,157 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:01:24,080 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:01:32,372 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:01:48,470 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:01:48,471 - openai._base_client - INFO - Retrying request to /chat/completions in 12.000000 seconds
+2025-11-28 23:03:55,406 - __main__ - INFO - Initializing Agent Engine...
+2025-11-28 23:03:55,471 - __main__ - INFO - Processing 1/3...
+2025-11-28 23:03:55,471 - __main__ - INFO - Evaluating QID: 4hop1__152562_5274_458768_33677
+2025-11-28 23:03:55,471 - __main__ - INFO - Question: Vilaiyaadu Mankatha's record label has just one company that is larger than it. When was the most recent Bicycle Friendly Community award given to the city where the headquarters of that larger company lies?
+2025-11-28 23:03:56,892 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:04:00,723 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:04:04,887 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:04:08,128 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:04:14,271 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:04:18,490 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:04:26,766 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:04:26,767 - openai._base_client - INFO - Retrying request to /chat/completions in 34.000000 seconds
+2025-11-28 23:05:02,160 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:05:11,207 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:05:15,098 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:05:19,194 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:05:22,471 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:05:22,471 - openai._base_client - INFO - Retrying request to /chat/completions in 38.000000 seconds
+2025-11-28 23:06:01,997 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:06:06,365 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:06:15,006 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:06:25,824 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:06:28,929 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:06:28,929 - openai._base_client - INFO - Retrying request to /chat/completions in 32.000000 seconds
+2025-11-28 23:07:02,722 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:07:06,921 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:07:10,812 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:07:15,523 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:07:19,754 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:07:19,754 - openai._base_client - INFO - Retrying request to /chat/completions in 41.000000 seconds
+2025-11-28 23:08:06,353 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:08:12,041 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:08:16,752 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:08:21,367 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:13:48,323 - __main__ - INFO - Initializing Agent Engine...
+2025-11-28 23:13:48,384 - __main__ - INFO - Processing 1/3...
+2025-11-28 23:13:48,384 - __main__ - INFO - Evaluating QID: 4hop1__152562_5274_458768_33677
+2025-11-28 23:13:48,384 - __main__ - INFO - Question: Vilaiyaadu Mankatha's record label has just one company that is larger than it. When was the most recent Bicycle Friendly Community award given to the city where the headquarters of that larger company lies?
+2025-11-28 23:13:50,075 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:13:55,520 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:14:00,622 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:14:08,098 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:14:12,296 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:14:17,930 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:14:23,253 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:14:26,836 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:14:26,837 - openai._base_client - INFO - Retrying request to /chat/completions in 34.000000 seconds
+2025-11-28 23:15:02,370 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:15:08,514 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:15:13,223 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:15:17,935 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:15:26,434 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:15:26,435 - openai._base_client - INFO - Retrying request to /chat/completions in 34.000000 seconds
+2025-11-28 23:16:02,071 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:16:07,087 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:16:12,515 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:16:21,294 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:16:25,213 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:16:25,213 - openai._base_client - INFO - Retrying request to /chat/completions in 35.000000 seconds
+2025-11-28 23:17:02,181 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:17:12,420 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:17:20,115 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:17:33,179 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:17:36,910 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:17:36,910 - openai._base_client - INFO - Retrying request to /chat/completions in 24.000000 seconds
+2025-11-28 23:18:04,030 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:18:12,120 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:18:14,921 - src.reasoning_engine - ERROR - Tool error: All configured search backends failed. No backend available.
+Traceback (most recent call last):
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/reasoning_engine.py", line 101, in solve
+    tool_output = self._execute_tool(tool, args)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/reasoning_engine.py", line 133, in _execute_tool
+    results = self.searcher.search(args.get("query", ""))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/web_search.py", line 87, in search
+    raise SearchError(
+src.web_search.SearchError: All configured search backends failed. No backend available.
+2025-11-28 23:18:16,830 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:18:22,360 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:18:27,071 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:18:27,071 - openai._base_client - INFO - Retrying request to /chat/completions in 34.000000 seconds
+2025-11-28 23:19:03,121 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:19:10,182 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:19:14,994 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:19:22,776 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:19:26,770 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:19:26,770 - openai._base_client - INFO - Retrying request to /chat/completions in 34.000000 seconds
+2025-11-28 23:20:14,909 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:20:20,735 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:20:27,892 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:20:33,062 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:20:37,120 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:20:37,121 - openai._base_client - INFO - Retrying request to /chat/completions in 24.000000 seconds
+2025-11-28 23:21:03,334 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:21:09,089 - src.reasoning_engine - ERROR - Tool error: All configured search backends failed. No backend available.
+Traceback (most recent call last):
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/reasoning_engine.py", line 101, in solve
+    tool_output = self._execute_tool(tool, args)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/reasoning_engine.py", line 133, in _execute_tool
+    results = self.searcher.search(args.get("query", ""))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/moony/Descargas/musique-solver-alpha-main/src/web_search.py", line 87, in search
+    raise SearchError(
+src.web_search.SearchError: All configured search backends failed. No backend available.
+2025-11-28 23:21:14,394 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:21:22,074 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:21:28,116 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:21:32,826 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:21:32,826 - openai._base_client - INFO - Retrying request to /chat/completions in 28.000000 seconds
+2025-11-28 23:22:02,521 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:22:07,949 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:22:21,877 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:22:26,279 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:22:29,760 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:22:29,760 - openai._base_client - INFO - Retrying request to /chat/completions in 31.000000 seconds
+2025-11-28 23:23:02,519 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:23:08,206 - __main__ - INFO - Agent Answer: None
+2025-11-28 23:23:08,206 - __main__ - INFO - Steps Taken: 40
+2025-11-28 23:23:08,206 - __main__ - INFO - ---
+2025-11-28 23:23:08,208 - __main__ - INFO - Processing 2/3...
+2025-11-28 23:23:08,208 - __main__ - INFO - Evaluating QID: 4hop1__88342_75218_128008_80487
+2025-11-28 23:23:08,208 - __main__ - INFO - Question: When is the all-star game of the league whose member played in the most championship series which proceed the MVP award?
+2025-11-28 23:23:10,310 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:23:17,581 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:23:23,587 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-28 23:23:29,972 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-28 23:23:29,972 - openai._base_client - INFO - Retrying request to /chat/completions in 31.000000 seconds
+2025-11-28 23:24:02,330 - httpx - INFO - HTTP Request: POST https://ai.megallm.io/v1/chat/completions "HTTP/1.1 200 OK"
