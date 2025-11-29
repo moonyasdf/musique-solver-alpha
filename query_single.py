@@ -31,9 +31,11 @@ def main():
     # Init components (Simplified)
     llm = LLMClient(
         api_key=config.OPENAI_API_KEY, 
-        model=config.OPENAI_MODEL, 
+        model=config.OPENAI_MODEL,
+        base_url=config.OPENAI_API_BASE if config.OPENAI_API_BASE != "https://api.openai.com/v1" else None,
         temperature=0.0,
-        system_prompt=load_system_prompt()
+        system_prompt=load_system_prompt(),
+        streaming=config.STREAMING
     )
     searcher = WikipediaSearchClient(rate_limit=config.SEARCH_DELAY)
     fetcher = WikipediaArticleFetcher()

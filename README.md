@@ -86,6 +86,13 @@ TEMPERATURE=0.2
 
 ## Usage
 
+### Quick Connection Test
+Make sure the configured LLM endpoint is reachable before running expensive evaluations:
+
+```bash
+python test_connection.py
+```
+
 ### Running Evaluation
 
 To evaluate the system on 10 random questions:
@@ -166,6 +173,18 @@ For each sub-question:
 3. **REASON**: Extract answer with evidence
 4. **VERIFY**: Check if answer addresses the sub-question
 5. **BACKTRACK**: If needed, try alternative queries or articles
+
+### 5. Selector-Based Multi-Resolution Retrieval
+To avoid context flooding, the agent now uses a strictly enforced selector workflow:
+1. **Search (Macro)** – `search_google` returns metadata-only results (Title, URL, 2-line snippet) in a numbered list.
+2. **Select** – The agent must pick exactly one `result_id` based on the snippets provided.
+3. **Inspect (Meso)** – `inspect_article_structure(result_id)` reveals the article's lead summary and Table of Contents.
+4. **Target** – The agent chooses the most relevant section header.
+5. **Read (Micro)** – `read_section(section_name)` fetches the full text for that specific section only.
+6. **Store & Plan** – Extracted facts are stored via `add_to_memory`, and the TODO plan is updated with `manage_tasks`.
+7. **Answer** – Once all hops are satisfied with evidence, the agent calls `answer_question`.
+
+This multi-resolution loop dramatically reduces token usage while improving reasoning precision.
 
 ## Configuration
 
