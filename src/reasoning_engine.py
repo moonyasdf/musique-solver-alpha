@@ -43,7 +43,7 @@ class ReasoningEngine:
         while current_step < self.max_steps:
             current_step += 1
             
-            tree_snapshot = self.memory.get_tree_view()
+            tree_snapshot = self.memory.get_tree_view(include_content=True)
             plan_snapshot = self.todo.get_plan_view()
             
             prompt = self._build_step_prompt(
@@ -239,7 +239,10 @@ class ReasoningEngine:
             history_text_list.append(entry)
             
         history_text = "\n\n".join(history_text_list) if history_text_list else "(No actions taken yet)"
-        tree_view = tree.replace("KNOWLEDGE TREE:\n", "", 1) if tree.startswith("KNOWLEDGE TREE") else tree
+        if tree.startswith("KNOWLEDGE TREE"):
+            tree_view = tree.split("\n", 1)[1] if "\n" in tree else ""
+        else:
+            tree_view = tree
 
         return f"""
 GOAL: {q}

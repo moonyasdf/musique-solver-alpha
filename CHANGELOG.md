@@ -1,5 +1,11 @@
 # Changelog - Multi-Resolution Retrieval (EDR) Implementation
 
+## Unreleased
+
+### ✨ Improvements
+- Research memory tree now surfaces short summaries for every stored fact, letting the agent actually reuse prior hops during later reasoning.
+- Updated the universal system prompt with self-auditing guidance and better memory hygiene instructions so the agent questions faulty assumptions before looping.
+
 ## Version 0.2.1 - Agentic Multi-Resolution Retrieval Refactor (2024)
 
 ### 🎯 **Core Objective**
