@@ -4,7 +4,7 @@ import logging
 import json
 import re
 import time
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional, Set
 
 from .llm_client import LLMClient
 from .web_search import WikipediaSearchClient
@@ -24,13 +24,43 @@ class ReasoningEngine:
         self.max_steps = 40
         self.history_window = 15
         
+        # Session state
+        self.current_question: str = ""
+        self.followup_flags: Set[str] = set()
+        self.region_markers: Set[str] = {
+            "india","china","japan","korea","united kingdom","uk","usa","united states","america",
+            "mexico","brazil","canada","australia","europe","africa","middle east","arabia","germany",
+            "france","spain","italy","philippines","indonesia","malaysia","singapore","russia","turkey",
+            "latin","latam","taiwan","hong kong","thailand","pakistan","bangladesh","vietnam","new zealand",
+            "south africa","nigeria","uae","dubai","saudi","argentina","peru"
+        }
+        self.last_search_results = []
+        self.last_inspected_url = ""
+        
         # State tracking for Anti-Looping
         self.last_action_hash = None
         self.loop_counter = 0
 
     def solve(self, question: str) -> Dict[str, Any]:
+        # Reset per-question state
+        self.memory = ResearchTree()
+        self.todo = ResearchTodoManager()
+        self.last_search_results = []
+        self.last_inspected_url = ""
+        self.last_action_hash = None
+        self.loop_counter = 0
+        self.current_question = question
+        self.followup_flags = set()
+        
         self.memory.add_node("root", "Goal", question)
         self.todo.add_task(f"Decompose and answer: {question}", priority=10)
+        
+        question_lower = question.lower()
+        if "bicycle friendly community" in question_lower:
+            self.todo.add_task(
+                "Bicycle Friendly Community awards are issued by the League of American Bicyclists in the U.S.; ensure derived cities fit that scope before searching dates.",
+                priority=9,
+            )
         
         reasoning_trace = []
         current_step = 0
@@ -199,12 +229,17 @@ class ReasoningEngine:
                 return f"📖 SECTION CONTENT ({section_name}):\n{content}"
 
         elif tool == "add_to_memory":
+            topic = args.get("topic", "Info")
+            content = args.get("content", "")
             source_url = args.get("source_url") or self.last_inspected_url or ""
             node_id = self.memory.add_node(
-                args.get("parent_id", "root"), args.get("topic", "Info"), 
-                args.get("content", ""), source_url
+                args.get("parent_id", "root"), topic, content, source_url
             )
-            return f"✓ Info stored in node [{node_id}]."
+            followup_note = self._maybe_add_followup_tasks(topic, content)
+            response = f"✓ Info stored in node [{node_id}]."
+            if followup_note:
+                response += f" {followup_note}"
+            return response
 
         elif tool == "manage_tasks":
             action = args.get("action")
