@@ -1,0 +1,306 @@
+"""Updated Reasoning Engine with Textual History and Robust Error Handling."""
+from __future__ import annotations
+import logging
+import json
+import re
+import time
+from typing import Dict, Any, List
+
+from .llm_client import LLMClient
+from .web_search import WikipediaSearchClient
+from .wiki_fetcher import WikipediaArticleFetcher
+from .research_tree import ResearchTree
+from .todo_manager import ResearchTodoManager
+
+logger = logging.getLogger(__name__)
+
+class ReasoningEngine:
+    def __init__(self, llm: LLMClient, searcher: WikipediaSearchClient, fetcher: WikipediaArticleFetcher):
+        self.llm = llm
+        self.searcher = searcher
+        self.fetcher = fetcher
+        self.memory = ResearchTree()
+        self.todo = ResearchTodoManager()
+        self.max_steps = 40
+        self.last_search_results = []
+        self.last_inspected_url = None
+        
+        # Aumentamos la ventana. Al usar texto plano en lugar de JSON, 
+        # podemos meter más pasos sin confundir al modelo.
+        self.history_window = 15 
+
+    def solve(self, question: str) -> Dict[str, Any]:
+        self.memory.add_node("root", "Goal", question)
+        self.todo.add_task(f"Decompose and answer: {question}", priority=10)
+        
+        reasoning_trace = []
+        current_step = 0
+        final_answer = None
+
+        print(f"\n{'='*60}")
+        print(f"🚀 STARTING QUESTION: {question}")
+        print(f"{'='*60}")
+
+        while current_step < self.max_steps:
+            current_step += 1
+            
+            tree_snapshot = self.memory.get_tree_view()
+            plan_snapshot = self.todo.get_plan_view()
+            
+            # Construimos el prompt usando los últimos N pasos
+            prompt = self._build_step_prompt(
+                question, 
+                tree_snapshot, 
+                plan_snapshot, 
+                reasoning_trace[-self.history_window:]
+            )
+            
+            # Bucle de reintento para errores de API (Rate Limit / 429)
+            response_text = ""
+            for attempt in range(3):
+                try:
+                    response_text = self.llm.chat([{"role": "user", "content": prompt}], temperature=0.0)
+                    break # Éxito, salimos del bucle de reintento
+                except Exception as e:
+                    if "429" in str(e) or "Rate limit" in str(e):
+                        wait_time = 5 * (attempt + 1)
+                        print(f"\n⚠️ API Rate Limit hit. Pausing for {wait_time} seconds...")
+                        time.sleep(wait_time)
+                    else:
+                        logger.error(f"LLM Critical Error: {e}")
+                        print(f"❌ LLM ERROR: {e}")
+                        # Si falla críticamente, esperamos un poco y saltamos el turno para no romper el loop
+                        time.sleep(2)
+                        break
+            
+            if not response_text:
+                continue
+
+            # Parseo de la respuesta
+            action_data = self._parse_json_response(response_text)
+            
+            thought = action_data.get("thought", "No thought")
+            tool = action_data.get("tool")
+            args = action_data.get("args", {})
+            
+            # Log en terminal
+            print(f"\nStep {current_step} | Tool: \033[94m{tool}\033[0m") 
+            print(f"Thought: {thought}")
+
+            tool_output: str = ""
+            
+            try:
+                # --- EJECUCIÓN DE HERRAMIENTAS ---
+                if tool == "search_google":
+                    try:
+                        results = self.searcher.search(args.get("query", ""))
+                        self.last_search_results = results
+                        if results:
+                            formatted = ["SEARCH RESULTS (Metadata Only):"]
+                            for i, r in enumerate(results, 1):
+                                formatted.append(f"\n[{i}] Title: {r.title}")
+                                formatted.append(f"    URL: {r.url}")
+                                if r.snippet:
+                                    formatted.append(f"    Snippet: {r.snippet}")
+                            formatted.append("\n⚠️ YOU MUST SELECT ONE result by calling inspect_article_structure.")
+                            tool_output = "\n".join(formatted)
+                        else:
+                            tool_output = "No results found. Try a different query."
+                    except Exception as search_err:
+                        tool_output = f"⚠️ Search Error: {search_err}. Try a broader query or different keywords."
+
+                elif tool == "inspect_article_structure":
+                    url = args.get("url")
+                    result_id = args.get("result_id")
+                    
+                    # Resolución de URL
+                    target_url = None
+                    if result_id is not None:
+                        try:
+                            idx = int(result_id) - 1
+                            if 0 <= idx < len(self.last_search_results):
+                                target_url = self.last_search_results[idx].url
+                            else:
+                                tool_output = f"❌ Invalid result_id: {result_id}."
+                        except:
+                            tool_output = f"❌ Invalid result_id format: {result_id}"
+                    elif url:
+                        target_url = url
+                    
+                    if target_url:
+                        self.last_inspected_url = target_url
+                        struct = self.fetcher.get_article_structure(target_url)
+                        
+                        formatted = [f"📄 ARTICLE: {struct.title}"]
+                        formatted.append(f"    URL: {target_url}")
+                        
+                        # Resumen (Lead)
+                        summary_limit = 4000
+                        summary_text = struct.summary
+                        if len(summary_text) > summary_limit:
+                            formatted.append(f"\n📝 SUMMARY (Lead, truncated):\n{summary_text[:summary_limit]}...")
+                            formatted.append("\n(To see more, use read_section with section_name='lead')")
+                        else:
+                            formatted.append(f"\n📝 SUMMARY (Lead Section):\n{summary_text}")
+                        
+                        # Tabla de Contenidos
+                        formatted.append(f"\n📑 TABLE OF CONTENTS (Sections):")
+                        if not struct.sections:
+                            formatted.append("  (No specific sections found via API. The Lead Section usually contains the key info.)")
+                        else:
+                            for i, sec in enumerate(struct.sections, 1):
+                                formatted.append(f"  [{i}] {sec}")
+                                
+                        formatted.append("\n⚠️ ACTION REQUIRED: Select a section to read (use read_section).")
+                        tool_output = "\n".join(formatted)
+                    elif not tool_output: # Si no se seteó error antes
+                        tool_output = "❌ Must provide either 'url' or 'result_id'"
+
+                elif tool == "read_section":
+                    url = args.get("url") or self.last_inspected_url
+                    section_name = args.get("section_name", "").strip()
+                    
+                    if not url:
+                        tool_output = "❌ No article inspected. You must Inspect first."
+                    else:
+                        lead_aliases = ["", "lead", "summary", "intro", "introduction", "lead section", "overview", "0"]
+                        
+                        if section_name.lower() in lead_aliases:
+                            struct = self.fetcher.get_article_structure(url)
+                            tool_output = f"📖 LEAD SECTION CONTENT:\n{struct.summary}"
+                        else:
+                            content = self.fetcher.get_section_content(url, section_name)
+                            if "not found" in content.lower():
+                                 tool_output = f"❌ {content} -> Please check the ToC list again exactly."
+                            else:
+                                tool_output = f"📖 SECTION CONTENT ({section_name}):\n{content}"
+
+                elif tool == "add_to_memory":
+                    source_url = args.get("source_url") or self.last_inspected_url or ""
+                    node_id = self.memory.add_node(
+                        args.get("parent_id", "root"), 
+                        args.get("topic", "Info"), 
+                        args.get("content", ""),
+                        source_url
+                    )
+                    tool_output = f"✓ Info stored in node [{node_id}]."
+
+                elif tool == "manage_tasks":
+                    action = args.get("action")
+                    if action == "add":
+                        desc = args.get("description", "No desc")
+                        tid = self.todo.add_task(desc, args.get("priority", 5))
+                        tool_output = f"✓ Task added ID {tid}"
+                    elif action == "complete":
+                        tid = args.get("task_id")
+                        res = args.get("result", "Done")
+                        if tid:
+                            self.todo.complete_task(tid, res)
+                            tool_output = f"✓ Task {tid} marked complete."
+                        else:
+                            tool_output = "❌ Task ID required"
+                    else:
+                        tool_output = "❌ Unknown action"
+
+                elif tool == "answer_question":
+                    final_answer = args.get("answer")
+                    self.todo.complete_all(final_answer or "Answered")
+                    tool_output = f"✅ Final answer recorded: {final_answer}"
+                    print(f"\n🎯 FINAL ANSWER: {final_answer}")
+                    break
+
+                else:
+                    tool_output = f"❌ Unknown tool: {tool}"
+
+            except Exception as e:
+                tool_output = f"❌ Execution Error: {e}"
+                logger.error(f"Tool error: {e}", exc_info=True)
+
+            # Log resultado en terminal (truncado)
+            clean_out = tool_output.replace('\n', ' ')
+            print(f"Result: \033[92m{clean_out[:400]}\033[0m" + ("..." if len(clean_out)>400 else ""))
+
+            reasoning_trace.append({
+                "step": current_step, 
+                "thought": thought,
+                "tool": tool, 
+                "args": args,
+                "result": tool_output
+            })
+
+        return {
+            "final_answer": final_answer, 
+            "trace": reasoning_trace,
+            "tree_state": self.memory.to_json(),
+            "plan_state": self.todo.get_plan_view()
+        }
+
+    def _build_step_prompt(self, q, tree, plan, history: List[Dict]):
+        """
+        Construye el prompt convirtiendo el historial JSON a un FORMATO NARRATIVO.
+        Esto elimina la necesidad de un LLM resumidor y hace que el modelo sea 'consciente'.
+        """
+        tree_view = tree.replace("KNOWLEDGE TREE:\n", "", 1) if tree.startswith("KNOWLEDGE TREE") else tree
+        
+        # TRANSFORMAR JSON A NARRATIVA DE TEXTO
+        # Esto es lo que hace que el modelo "entienda" su pasado sin perderse en llaves.
+        history_text_list = []
+        for h in history:
+            # Encabezado del paso
+            entry = f"Step {h['step']}: {h['thought']}\n"
+            
+            # Acción tomada
+            args_str = ", ".join([f"{k}='{v}'" for k, v in h['args'].items() if k != 'content']) # Ocultar contenido largo en args
+            entry += f"Action: {h['tool']}({args_str})\n"
+            
+            # Resultado (Truncado inteligentemente para el prompt, no para el log)
+            result_preview = str(h.get('result', ''))
+            if len(result_preview) > 800:
+                result_preview = result_preview[:800] + "... [Content truncated for memory]"
+            entry += f"Observation: {result_preview}"
+            
+            history_text_list.append(entry)
+            
+        history_text = "\n\n".join(history_text_list)
+        if not history_text:
+            history_text = "(No actions taken yet)"
+
+        # TU PROMPT SOLICITADO (INTACTO)
+        return f"""
+GOAL: {q}
+
+{plan}
+
+RESEARCH TREE (ID :: TOPIC):
+{tree_view}
+
+REMINDERS:
+- ALWAYS follow: REFLECT → SEARCH → SELECT → INSPECT → TARGET → READ → STORE → PLAN.
+- Use search result_id (preferred) or exact URL when calling inspect_article_structure.
+- The lead summary shown in inspect_article_structure IS THE FULL CONTENT of the intro.
+- Only call read_section if you need a DIFFERENT section from the ToC.
+- section_name MUST be an EXACT string match from the ToC.
+- Every verified fact must be saved with add_to_memory.
+- Keep the TODO list accurate with manage_tasks.
+- After finding a fact, IMMEDIATELY add_to_memory and manage_tasks to mark progress.
+- If a section is missing or info is not there, DO NOT LOOP. Search again or check a different source.
+
+RECENT STEPS (Last {len(history)}):
+{history_text}
+
+Respond ONLY with JSON containing 'thought', 'tool', and 'args'.
+"""
+
+    def _parse_json_response(self, text: str) -> Dict[str, Any]:
+        match = re.search(r'```json\s*(.*?)\s*```', text, re.DOTALL)
+        clean_text = match.group(1) if match else text
+        try:
+            return json.loads(clean_text)
+        except:
+            # Fallback simple
+            try:
+                start = text.find('{')
+                end = text.rfind('}') + 1
+                return json.loads(text[start:end])
+            except:
+                return {"tool": "error", "thought": "Failed to parse JSON", "args": {}}

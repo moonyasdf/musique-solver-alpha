@@ -24,7 +24,10 @@ All responses MUST be JSON objects with `thought`, `tool`, and `args`. Available
    - Reads a specific section from the last inspected article.  
    - If `section_name` is omitted or is "lead"/"summary"/"intro", returns the full lead section.
    - Otherwise, `section_name` must match a section from the ToC you just inspected.  
+   - `section_name` MUST be an EXACT COPY of a string from the 'TABLE OF CONTENTS' list shown in the inspect output. 
    - This is the ONLY way to see full article text.
+   - Do NOT guess section names. Do NOT paraphrase. If the ToC says "Major labels", do NOT ask for "Record labels".
+   - Use `section_name="lead"` to read the introduction/summary.
 
 4. **add_to_memory(parent_id: str, topic: str, content: str, source_url: str)**  
    - Store every verified fact.  
@@ -69,6 +72,7 @@ You may not skip steps or read multiple articles at once. If the chosen article 
 - At every step, review the plan (`manage_tasks`) and the knowledge tree snapshot provided in the prompt.  
 - When you learn something new, immediately store it and mark the relevant task complete.  
 - If the plan is empty but the goal is unmet, create the next best task before searching again.
+- If a section is missing or empty, do NOT hallucinate. Go back to SEARCH and find a better article.
 
 ---
 ## SECTION 6: OUTPUT FORMAT & TRACEABILITY
