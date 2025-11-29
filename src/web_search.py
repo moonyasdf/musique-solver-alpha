@@ -21,9 +21,12 @@ except ImportError:  # pragma: no cover - fallback not available during tests
 logger = logging.getLogger(__name__)
 
 WIKIPEDIA_API_URL = "https://en.wikipedia.org/w/api.php"
+WIKIPEDIA_REST_SEARCH_URL = "https://en.wikipedia.org/w/rest.php/v1/search/page"
 GOOGLE_CSE_URL = "https://www.googleapis.com/customsearch/v1"
 SERP_API_URL = "https://serpapi.com/search"
-DEFAULT_HEADERS = {"User-Agent": "musique-solver/0.2 (research@musique-solver)"}
+DEFAULT_HEADERS = {
+    "User-Agent": "MusiqueSolver/0.2 (+https://github.com/musique-solver; contact: research@musique-solver.local)",
+}
 
 
 @dataclass
@@ -95,7 +98,8 @@ class WikipediaSearchClient:
             backends.append(self._search_google_custom)
         if self.serpapi_key:
             backends.append(self._search_serpapi)
-        # Wikipedia's own search API is reliable and returns snippets
+        # Wikipedia native search endpoints (REST + action API)
+        backends.append(self._search_wikipedia_rest)
         backends.append(self._search_wikipedia_api)
         if google_search is not None:
             backends.append(self._search_html)
@@ -154,7 +158,32 @@ class WikipediaSearchClient:
                 break
         return results
 
+    def _search_wikipedia_rest(self, query: str, max_results: int) -> List[SearchResult]:
+        """Wikipedia REST API v1 search - newer, more reliable endpoint."""
+        stripped_query = self._strip_site_filter(query)
+        params = {"q": stripped_query, "limit": max_results}
+        
+        response = requests.get(
+            WIKIPEDIA_REST_SEARCH_URL, 
+            params=params, 
+            headers=DEFAULT_HEADERS, 
+            timeout=20
+        )
+        response.raise_for_status()
+        data = response.json()
+        
+        results: List[SearchResult] = []
+        pages = data.get("pages", [])
+        for page in pages:
+            title = page.get("title", "Wikipedia Result")
+            snippet = page.get("excerpt", "")
+            page_key = page.get("key", title.replace(" ", "_"))
+            url = f"https://en.wikipedia.org/wiki/{page_key}"
+            results.append(SearchResult(title=title, url=url, snippet=snippet))
+        return results
+
     def _search_wikipedia_api(self, query: str, max_results: int) -> List[SearchResult]:
+        """Wikipedia action API search - traditional endpoint."""
         stripped_query = self._strip_site_filter(query)
         params = {
             "action": "query",
@@ -163,6 +192,7 @@ class WikipediaSearchClient:
             "utf8": 1,
             "format": "json",
             "srlimit": max_results,
+            "origin": "*",  # Allow CORS
         }
         response = requests.get(WIKIPEDIA_API_URL, params=params, headers=DEFAULT_HEADERS, timeout=20)
         response.raise_for_status()
@@ -244,6 +274,7 @@ class WikipediaSearchClient:
             "explaintext": 1,
             "titles": title,
             "format": "json",
+            "origin": "*",
         }
         try:
             response = requests.get(WIKIPEDIA_API_URL, params=params, headers=DEFAULT_HEADERS, timeout=20)

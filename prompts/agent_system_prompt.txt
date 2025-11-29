@@ -20,10 +20,11 @@ All responses MUST be JSON objects with `thought`, `tool`, and `args`. Available
    - Returns title, lead summary, and Table of Contents.  
    - Never call `read_section` until you have inspected the article.
 
-3. **read_section(section_name: str, url?: str)**  
-   - Reads ONLY the specified section from the last inspected article (or provide the same URL explicitly).  
-   - Section name must come from the ToC you just inspected.  
-   - This is the ONLY way to see full text.
+3. **read_section(section_name?: str, url?: str)**  
+   - Reads a specific section from the last inspected article.  
+   - If `section_name` is omitted or is "lead"/"summary"/"intro", returns the full lead section.
+   - Otherwise, `section_name` must match a section from the ToC you just inspected.  
+   - This is the ONLY way to see full article text.
 
 4. **add_to_memory(parent_id: str, topic: str, content: str, source_url: str)**  
    - Store every verified fact.  

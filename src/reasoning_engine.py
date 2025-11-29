@@ -20,9 +20,11 @@ class ReasoningEngine:
         self.fetcher = fetcher
         self.memory = ResearchTree()
         self.todo = ResearchTodoManager() # Instancia del Todo Manager
-        self.max_steps = 30
+        self.max_steps = 40
         self.last_search_results = []  # Track results for result_id selection
         self.last_inspected_url = None  # Track last inspected article
+        self.history_window = 4  # Number of previous steps to show the LLM
+        self.history_truncate_chars = 1600
 
     def solve(self, question: str) -> Dict[str, Any]:
         self.memory.add_node("root", "Goal", question)
@@ -40,7 +42,12 @@ class ReasoningEngine:
             tree_snapshot = self.memory.get_tree_view()
             plan_snapshot = self.todo.get_plan_view()
             
-            prompt = self._build_step_prompt(question, tree_snapshot, plan_snapshot, reasoning_trace[-2:])
+            prompt = self._build_step_prompt(
+                question, 
+                tree_snapshot, 
+                plan_snapshot, 
+                reasoning_trace[-self.history_window:]
+            )
             
             try:
                 response_text = self.llm.chat([{"role": "user", "content": prompt}], temperature=0.0)
@@ -101,34 +108,40 @@ class ReasoningEngine:
                     self.last_inspected_url = url  # Track for read_section
                     struct = self.fetcher.get_article_structure(url)
                     
-                    # Format structure view (ToC)
+                    # Format structure view (ToC) - Show full summary if short, truncate if long
                     formatted = [f"📄 ARTICLE: {struct.title}"]
                     formatted.append(f"    URL: {url}")
-                    formatted.append(f"\n📝 SUMMARY (Lead Section):\n{struct.summary[:500]}...")
+                    summary_text = struct.summary
+                    if len(summary_text) > 1000:
+                        formatted.append(f"\n📝 SUMMARY (Lead Section, truncated):\n{summary_text[:1000]}...")
+                    else:
+                        formatted.append(f"\n📝 SUMMARY (Lead Section):\n{summary_text}")
                     formatted.append(f"\n📑 TABLE OF CONTENTS (Sections):")
                     for i, sec in enumerate(struct.sections, 1):
                         formatted.append(f"  [{i}] {sec}")
                     formatted.append("\n⚠️ YOU MUST SELECT ONE SECTION TO READ (use read_section with section_name).")
+                    formatted.append("💡 TIP: If the lead summary contains your answer, you can proceed to add_to_memory directly.")
                     tool_output = "\n".join(formatted)
 
                 elif tool == "read_section":
                     # Use last inspected URL if not provided
                     url = args.get("url") or self.last_inspected_url
-                    section_name = args.get("section_name", "")
+                    section_name = args.get("section_name", "").strip()
                     
                     if not url:
                         tool_output = "❌ No article currently inspected. Inspect an article first."
                         raise ValueError("No inspected article")
                     
-                    if not section_name:
-                        tool_output = "❌ Must provide section_name from the Table of Contents"
-                        raise ValueError("Missing section_name")
-                    
-                    content = self.fetcher.get_section_content(url, section_name)
-                    if content:
-                        tool_output = f"📖 SECTION CONTENT ({section_name}):\n{content}"
+                    # If no section name or requesting "lead"/"summary"/"intro", return lead section
+                    if not section_name or section_name.lower() in ["lead", "summary", "intro", "introduction", "lead section"]:
+                        struct = self.fetcher.get_article_structure(url)
+                        tool_output = f"📖 LEAD SECTION CONTENT:\n{struct.summary}"
                     else:
-                        tool_output = f"Section '{section_name}' not found or empty. Check the ToC again."
+                        content = self.fetcher.get_section_content(url, section_name)
+                        if content:
+                            tool_output = f"📖 SECTION CONTENT ({section_name}):\n{content}"
+                        else:
+                            tool_output = f"Section '{section_name}' not found or empty. Check the ToC again."
 
                 elif tool == "add_to_memory":
                     source_url = args.get("source_url") or self.last_inspected_url or ""
@@ -178,7 +191,7 @@ class ReasoningEngine:
                 "thought": thought,
                 "tool": tool, 
                 "args": args,
-                "result": str(tool_output)[:500]  # Increased from 200 to 500
+                "result": tool_output
             })
 
         return {
@@ -190,7 +203,18 @@ class ReasoningEngine:
 
     def _build_step_prompt(self, q, tree, plan, history):
         tree_view = tree.replace("KNOWLEDGE TREE:\n", "", 1) if tree.startswith("KNOWLEDGE TREE") else tree
-        history_text = json.dumps(history, ensure_ascii=False, indent=2) if history else "[]"
+        
+        # Truncate history for better context window management
+        if history:
+            truncated_history = []
+            for h in history:
+                h_copy = dict(h)
+                if 'result' in h_copy and len(str(h_copy['result'])) > self.history_truncate_chars:
+                    h_copy['result'] = str(h_copy['result'])[:self.history_truncate_chars] + "... [truncated]"
+                truncated_history.append(h_copy)
+            history_text = json.dumps(truncated_history, ensure_ascii=False, indent=2)
+        else:
+            history_text = "[]"
 
         return f"""
 GOAL: {q}
@@ -203,12 +227,14 @@ RESEARCH TREE (ID :: TOPIC):
 REMINDERS:
 - ALWAYS follow: REFLECT → SEARCH → SELECT → INSPECT → TARGET → READ → STORE → PLAN.
 - Use search result_id (preferred) or exact URL when calling inspect_article_structure.
-- Only call read_section after inspecting the article and include the exact section_name from the ToC.
+- The lead summary shown in inspect_article_structure IS THE FULL CONTENT - no need to read_section again if it's there.
+- Only call read_section if you need a DIFFERENT section from the ToC, or if the lead was too short.
 - Every verified fact must be saved with add_to_memory (include parent_id, topic, content, source_url).
 - Keep the TODO list accurate with manage_tasks before launching new searches.
 - Never fabricate URLs or section names.
+- After finding a fact, IMMEDIATELY add_to_memory and manage_tasks to mark progress.
 
-RECENT STEPS:
+RECENT STEPS (Last {len(history)}):
 {history_text}
 
 Respond ONLY with JSON containing 'thought', 'tool', and 'args'.

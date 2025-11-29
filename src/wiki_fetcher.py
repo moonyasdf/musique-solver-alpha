@@ -116,4 +116,10 @@ class WikipediaArticleFetcher:
         h.ignore_links = False 
         h.ignore_images = True
         h.body_width = 0
-        return h.handle(html).strip()
+        h.unicode_snob = True
+        h.decode_errors = 'ignore'
+        result = h.handle(html).strip()
+        # Remove excessive newlines
+        import re
+        result = re.sub(r'\n{3,}', '\n\n', result)
+        return result
